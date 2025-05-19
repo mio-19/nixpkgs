@@ -49,7 +49,7 @@ rustPlatform.buildRustPackage rec {
     inherit hash;
   };
 
-  KANIDM_BUILD_PROFILE = "release_nixpgs_${arch}";
+  KANIDM_BUILD_PROFILE = "release_nixos_${arch}";
 
   patches = lib.optionals enableSecretProvisioning [
     "${patchDir}/oauth2-basic-secret-modify.patch"
@@ -59,7 +59,6 @@ rustPlatform.buildRustPackage rec {
   postPatch =
     let
       format = (formats.toml { }).generate "${KANIDM_BUILD_PROFILE}.toml";
-      socket_path = if stdenv.hostPlatform.isLinux then "/run/kanidm/sock" else "/var/run/kanidm.socket";
       profile =
         {
           cpu_flags = if stdenv.hostPlatform.isx86_64 then "x86_64_legacy" else "none";
@@ -68,12 +67,12 @@ rustPlatform.buildRustPackage rec {
           client_config_path = "/etc/kanidm/config";
           resolver_config_path = "/etc/kanidm/unixd";
           resolver_unix_shell_path = "${lib.getBin bashInteractive}/bin/bash";
-          server_admin_bind_path = socket_path;
+          server_admin_bind_path = "/run/kanidmd/sock";
           server_config_path = "/etc/kanidm/server.toml";
           server_ui_pkg_path = "@htmx_ui_pkg_path@";
         }
         // lib.optionalAttrs (lib.versionOlder version "1.5") {
-          admin_bind_path = socket_path;
+          admin_bind_path = "/run/kanidmd/sock";
           default_config_path = "/etc/kanidm/server.toml";
           default_unix_shell_path = "${lib.getBin bashInteractive}/bin/bash";
           htmx_ui_pkg_path = "@htmx_ui_pkg_path@";
@@ -95,16 +94,13 @@ rustPlatform.buildRustPackage rec {
     installShellFiles
   ];
 
-  buildInputs =
-    [
-      openssl
-      sqlite
-      pam
-      rust-jemalloc-sys
-    ]
-    ++ lib.optionals stdenv.hostPlatform.isLinux [
-      udev
-    ];
+  buildInputs = [
+    udev
+    openssl
+    sqlite
+    pam
+    rust-jemalloc-sys
+  ];
 
   # The UI needs to be in place before the tests are run.
   postBuild =
@@ -129,17 +125,15 @@ rustPlatform.buildRustPackage rec {
     ''profile.release.lto="off"''
   ];
 
-  preFixup =
-    ''
-      installShellCompletion \
-        --bash $releaseDir/build/completions/*.bash \
-        --zsh $releaseDir/build/completions/_*
-    ''
-    + lib.optionalString (!stdenv.hostPlatform.isDarwin) ''
-      # PAM and NSS need fix library names
-      mv $out/lib/libnss_kanidm.so $out/lib/libnss_kanidm.so.2
-      mv $out/lib/libpam_kanidm.so $out/lib/pam_kanidm.so
-    '';
+  preFixup = ''
+    installShellCompletion \
+      --bash $releaseDir/build/completions/*.bash \
+      --zsh $releaseDir/build/completions/_*
+
+    # PAM and NSS need fix library names
+    mv $out/lib/libnss_kanidm.so $out/lib/libnss_kanidm.so.2
+    mv $out/lib/libpam_kanidm.so $out/lib/pam_kanidm.so
+  '';
 
   passthru = {
     tests = {
@@ -172,7 +166,7 @@ rustPlatform.buildRustPackage rec {
       description = "Simple, secure and fast identity management platform";
       homepage = "https://github.com/kanidm/kanidm";
       license = licenses.mpl20;
-      platforms = platforms.linux ++ platforms.darwin;
+      platforms = platforms.linux;
       maintainers = with maintainers; [
         adamcstephens
         Flakebi
