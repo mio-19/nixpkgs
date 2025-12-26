@@ -3178,6 +3178,8 @@ self: super: with self; {
 
   cpe = callPackage ../development/python-modules/cpe { };
 
+  cpe-search = callPackage ../development/python-modules/cpe-search { };
+
   cppe = callPackage ../development/python-modules/cppe { inherit (pkgs) cppe; };
 
   cppheaderparser = callPackage ../development/python-modules/cppheaderparser { };
@@ -3868,6 +3870,8 @@ self: super: with self; {
   discum = callPackage ../development/python-modules/discum { };
 
   diskcache = callPackage ../development/python-modules/diskcache { };
+
+  diskcache-stubs = callPackage ../development/python-modules/diskcache-stubs { };
 
   disnake = callPackage ../development/python-modules/disnake { };
 
@@ -18197,6 +18201,8 @@ self: super: with self; {
   streamlit-avatar = callPackage ../development/python-modules/streamlit-avatar { };
 
   streamlit-card = callPackage ../development/python-modules/streamlit-card { };
+
+  streamlit-echarts = callPackage ../development/python-modules/streamlit-echarts { };
 
   streamlit-folium = callPackage ../development/python-modules/streamlit-folium { };
 

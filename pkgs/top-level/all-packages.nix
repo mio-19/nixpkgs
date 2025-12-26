@@ -2896,8 +2896,6 @@ with pkgs;
 
   hyphenDicts = recurseIntoAttrs (callPackages ../development/libraries/hyphen/dictionaries.nix { });
 
-  icemon = libsForQt5.callPackage ../applications/networking/icemon { };
-
   icepeak = haskell.lib.compose.justStaticExecutables haskellPackages.icepeak;
 
   ihaskell = callPackage ../development/tools/haskell/ihaskell/wrapper.nix {
@@ -9539,8 +9537,6 @@ with pkgs;
     in
     recurseIntoAttrs xorgPackages;
 
-  xwayland = callPackage ../servers/x11/xorg/xwayland.nix { };
-
   zabbixFor = version: rec {
     agent = (callPackages ../servers/monitoring/zabbix/agent.nix { }).${version};
     proxy-mysql =
@@ -12453,10 +12449,6 @@ with pkgs;
 
   xmonadctl = callPackage ../applications/window-managers/xmonad/xmonadctl.nix {
     inherit (haskellPackages) ghcWithPackages;
-  };
-
-  xmonad_log_applet = callPackage ../applications/window-managers/xmonad/log-applet {
-    inherit (xfce) libxfce4util xfce4-panel;
   };
 
   xmonad_log_applet_mate = xmonad_log_applet.override {
