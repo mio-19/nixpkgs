@@ -237,9 +237,10 @@ stdenv.mkDerivation (finalAttrs: {
   ++ lib.optionals stdenv.hostPlatform.isDarwin [
     "-Dalsa=disabled"
     "-Djavascript=disabled"
+    "-Dxcursor=disabled"
   ];
 
-  doCheck = true;
+  doCheck = stdenv.hostPlatform.isLinux;
 
   env = {
     # The check runs before glib-networking is registered
@@ -330,7 +331,7 @@ stdenv.mkDerivation (finalAttrs: {
     homepage = "https://www.gimp.org/";
     maintainers = with lib.maintainers; [ jtojnar ];
     license = lib.licenses.gpl3Plus;
-    platforms = lib.platforms.linux;
+    platforms = lib.platforms.linux ++ lib.platforms.darwin;
     mainProgram = "gimp";
   };
 })
