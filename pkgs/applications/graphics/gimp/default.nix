@@ -243,11 +243,14 @@ stdenv.mkDerivation (finalAttrs: {
   doCheck = true;
 
   mesonCheckFlags = lib.optionals stdenv.hostPlatform.isDarwin [
-    # UI and desktop validation tests are not reliable on macOS.
+    # UI tests require a window server which is unavailable in the build sandbox.
     "--no-suite"
     "app"
     "--no-suite"
-    "desktop"
+    "libgimp"
+    # Python-based tests can hang in the macOS sandbox (subset of libgimp suite).
+    "--no-suite"
+    "python3"
   ];
 
   env = {
