@@ -240,7 +240,15 @@ stdenv.mkDerivation (finalAttrs: {
     "-Dxcursor=disabled"
   ];
 
-  doCheck = stdenv.hostPlatform.isLinux;
+  doCheck = true;
+
+  mesonCheckFlags = lib.optionals stdenv.hostPlatform.isDarwin [
+    # UI and desktop validation tests are not reliable on macOS.
+    "--no-suite"
+    "app"
+    "--no-suite"
+    "desktop"
+  ];
 
   env = {
     # The check runs before glib-networking is registered
