@@ -11,6 +11,7 @@
   pkg-config,
   yaml-cpp,
   fmt_11,
+  makeWrapper,
   xorg,
 }:
 let
@@ -51,15 +52,25 @@ stdenv.mkDerivation rec {
     sed -i 's#URL \+${openloco-objects.url}#URL ${openloco-objects}#' CMakeLists.txt
   '';
 
+  patches = [
+    ./data-path.patch
+  ];
+
   NIX_CFLAGS_COMPILE = "-Wno-error=null-dereference";
 
   cmakeFlags = [
     "-DOPENLOCO_BUILD_TESTS=NO"
   ];
 
+  postFixup = ''
+    wrapProgram "$out/bin/OpenLoco" \
+      --set OPENLOCO_DATA_PATH "$out/share/openloco/data"
+  '';
+
   nativeBuildInputs = [
     cmake
     pkg-config
+    makeWrapper
   ];
 
   buildInputs = [

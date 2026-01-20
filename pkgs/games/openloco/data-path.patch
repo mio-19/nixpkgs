@@ -1,0 +1,28 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 233dc3a76ca5..15d4a974557a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -215,5 +215,5 @@ install(FILES "src/Resources/src/logo/icon_x128.png" DESTINATION "${CMAKE_INSTAL
+ install(FILES "src/Resources/src/logo/icon_x256.png" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps" RENAME "openloco.png")
+ install(FILES "src/Resources/src/logo/icon_x512.png" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/512x512/apps" RENAME "openloco.png")
+ install(FILES "src/Resources/src/logo/icon_steam.svg" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps" RENAME "openloco.svg")
+-install(DIRECTORY "data/" DESTINATION "${CMAKE_INSTALL_BINDIR}/data")
+-install(DIRECTORY "${openloco_objects_SOURCE_DIR}" DESTINATION "${CMAKE_INSTALL_BINDIR}/data/objects")
++install(DIRECTORY "data/" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/openloco/data")
++install(DIRECTORY "${openloco_objects_SOURCE_DIR}" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/openloco/data/objects")
+diff --git a/src/OpenLoco/src/Environment.cpp b/src/OpenLoco/src/Environment.cpp
+index 63794adb8336..d920a3003e2d 100644
+--- a/src/OpenLoco/src/Environment.cpp
++++ b/src/OpenLoco/src/Environment.cpp
+@@ -316,6 +316,11 @@ namespace OpenLoco::Environment
+ #if defined(__APPLE__) && defined(__MACH__)
+                 return Platform::GetBundlePath();
+ #else
++                const auto dataPath = Platform::getEnvironmentVariable("OPENLOCO_DATA_PATH");
++                if (!dataPath.empty())
++                {
++                    return fs::path(dataPath);
++                }
+                 return Platform::getCurrentExecutablePath().parent_path() / "data";
+ #endif
+             default:
