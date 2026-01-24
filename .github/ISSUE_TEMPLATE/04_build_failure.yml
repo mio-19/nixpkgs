@@ -77,7 +77,7 @@ body:
     id: "hydra-logs"
     attributes:
       label: "Link to Hydra build job"
-      description: "If you answered 'yes' in the question above, please copy-and-paste the link to the failing Hydra job here."
+      description: "If you answered 'yes' in the question above, please copy-and-paste the link to the failing Hydra job here. You can find Hydra jobs at https://hydra.nixos.org/jobset/nixpkgs/unstable#tabs-jobs"
     validations:
       required: false
   - type: "textarea"
