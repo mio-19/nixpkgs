@@ -153,7 +153,6 @@ in
         };
         wantedBy = [ "multi-user.target" ];
       };
-      wantedBy = [ "multi-user.target" ];
 
       fw-fanctrl-suspend = {
         description = "Framework Fan Controller sleep hook";
