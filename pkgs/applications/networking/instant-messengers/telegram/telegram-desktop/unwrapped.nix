@@ -57,6 +57,10 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-QCGtESg+38lHWCFcsevHdc0kQ7LKJQmJjUJWszphah8=";
   };
 
+  patches = [
+    ./mac-window.patch
+  ];
+
   nativeBuildInputs = [
     pkg-config
     cmake

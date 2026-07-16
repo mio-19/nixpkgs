@@ -42,15 +42,21 @@ stdenv.mkDerivation (finalAttrs: {
     glib-networking
   ];
 
-  qtWrapperArgs = lib.optionals (stdenv.hostPlatform.isLinux && withWebkit) [
-    "--prefix"
-    "LD_LIBRARY_PATH"
-    ":"
-    (lib.makeLibraryPath [
-      geoclue2
-      webkitgtk_4_1
-    ])
-  ];
+  qtWrapperArgs =
+    lib.optionals (stdenv.hostPlatform.isLinux && withWebkit) [
+      "--prefix"
+      "LD_LIBRARY_PATH"
+      ":"
+      (lib.makeLibraryPath [
+        geoclue2
+        webkitgtk_4_1
+      ])
+    ]
+    ++ lib.optionals stdenv.hostPlatform.isDarwin [
+      "--set"
+      "QT_WIDGETS_RHI"
+      "0"
+    ];
 
   dontUnpack = true;
   dontWrapGApps = true;

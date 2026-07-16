@@ -1,0 +1,45 @@
+diff --git a/ui/platform/mac/ui_window_mac.mm b/ui/platform/mac/ui_window_mac.mm
+index 2bb6cd2..ae66c4a 100644
+--- a/Telegram/lib_ui/ui/platform/mac/ui_window_mac.mm
++++ b/Telegram/lib_ui/ui/platform/mac/ui_window_mac.mm
+@@ -335,7 +335,7 @@ void WindowHelper::Private::initCustomTitle() {
+ 	// Emulate custom title instead (code below).
+ 	//
+ 	// Tried to backport a fix, testing.
+-	[_nativeWindow setStyleMask:[_nativeWindow styleMask] | NSWindowStyleMaskFullSizeContentView];
++	[_nativeWindow setStyleMask:([_nativeWindow styleMask] & ~NSWindowStyleMaskUtilityWindow) | NSWindowStyleMaskFullSizeContentView];
+ 
+ #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+ 	// Qt 6.11 may recreate both the NSView and NSWindow after this
+@@ -349,7 +349,7 @@ void WindowHelper::Private::initCustomTitle() {
+ 		if (!guard || attempts <= 0) return;
+ 		const auto wid = _owner->window()->winId();
+ 		if (!wid) {
+-			dispatch_async(dispatch_get_main_queue(), ^{
++			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+ 				(*poll)(attempts - 1);
+ 			});
+ 			return;
+@@ -357,7 +357,7 @@ void WindowHelper::Private::initCustomTitle() {
+ 		const auto freshView = reinterpret_cast<NSView*>(wid);
+ 		const auto freshWindow = freshView ? [freshView window] : nil;
+ 		if (!freshWindow) {
+-			dispatch_async(dispatch_get_main_queue(), ^{
++			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+ 				(*poll)(attempts - 1);
+ 			});
+ 			return;
+@@ -368,11 +368,11 @@ void WindowHelper::Private::initCustomTitle() {
+ 			_owner->window()->setWindowFlag(Qt::NoTitleBarBackgroundHint);
+ 			[freshWindow setTitlebarAppearsTransparent:YES];
+ 			[freshWindow setTitleVisibility:NSWindowTitleHidden];
+-			[freshWindow setStyleMask:[freshWindow styleMask]
++			[freshWindow setStyleMask:([freshWindow styleMask] & ~NSWindowStyleMaskUtilityWindow)
+ 				| NSWindowStyleMaskFullSizeContentView];
+ 		}
+ 	};
+-	dispatch_async(dispatch_get_main_queue(), ^{ (*poll)(50); });
++	dispatch_async(dispatch_get_main_queue(), ^{ (*poll)(500); });
+ #endif
+ 
+ 	auto inner = [_nativeWindow contentLayoutRect];
