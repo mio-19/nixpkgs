@@ -104,6 +104,12 @@ clangStdenv.mkDerivation (finalAttrs: {
     substituteInPlace src/ver/CMakeLists.txt \
       --replace-fail '"1.x-dev"' '"${finalAttrs.version}"'
 
+    # fmt 12's fmt/core.h no longer provides fmt::format (opt-in via
+    # FMT_DEPRECATED_HEAVY_CORE). Aseprite includes core.h from strings.h
+    # and then uses fmt::format in many translation units.
+    substituteInPlace src/app/i18n/strings.h \
+      --replace-fail '#include "fmt/core.h"' '#include "fmt/format.h"'
+
     # Fix build on Darwin with `-Werror=format-security`
     # (NSLog requires a string-literal format)
     substituteInPlace laf/os/osx/logger.mm \
