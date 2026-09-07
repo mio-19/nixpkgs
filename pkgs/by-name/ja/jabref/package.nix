@@ -94,8 +94,7 @@ stdenv.mkDerivation rec {
 
     sed -i -e '1a //REPOS file://${mitmCache}/https/repo.maven.apache.org/maven2,file://${mitmCache}/https/plugins.gradle.org/m2' build-support/src/main/java/*.java
 
-    substituteInPlace build-logic/build.gradle.kts \
-      --replace-fail '`kotlin-dsl`' 'id("org.gradle.kotlin.kotlin-dsl") version "${kotlinDslVersion}"'
+    sed -i -e '/gradlePluginPortal()/a\    mavenCentral()' build-logic/build.gradle.kts
 
     pushd jablib
 
